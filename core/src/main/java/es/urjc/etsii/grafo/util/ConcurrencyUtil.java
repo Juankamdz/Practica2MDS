@@ -88,6 +88,12 @@ public class ConcurrencyUtil {
         return futures.map(ConcurrencyUtil::await).collect(Collectors.toList());
     }
     public static void sleep(int time, TimeUnit unit) throws InterruptedException {
-        Thread.sleep(unit.toMillis(time));
+        try {
+            Thread.sleep(unit.toMillis(time));
+        } catch (InterruptedException e) {
+            // Re-interrupt the thread
+            Thread.currentThread().interrupt();
+            throw e; // Rethrow the InterruptedException
+        }
     }
 }
