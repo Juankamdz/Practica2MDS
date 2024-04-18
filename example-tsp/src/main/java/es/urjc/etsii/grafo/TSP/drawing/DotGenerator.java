@@ -101,9 +101,9 @@ public class DotGenerator {
 
     @GetMapping("/api/generategraph/{eventId}")
     public String getSolutionAsDotString(@PathVariable int eventId) throws IOException {
-        var event =  eventStorage.getEvent(eventId);
-        if(event instanceof SolutionGeneratedEvent solutionGeneratedEvent && solutionGeneratedEvent.getSolution().isPresent()){
-            var solution = (TSPSolution) solutionGeneratedEvent.getSolution().get();
+        var event = eventStorage.getEvent(eventId);
+        if (event instanceof SolutionGeneratedEvent && ((SolutionGeneratedEvent) event).getSolution().isPresent()) {
+            var solution = (TSPSolution) ((SolutionGeneratedEvent) event).getSolution().get();
             var viz = Graphviz.fromString(generateDotDiagram(solution));
             BufferedImage image = viz.render(Format.PNG).toImage();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
