@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Optional;
 
 @RestController
 public class DotGenerator {
@@ -102,14 +103,19 @@ public class DotGenerator {
     @GetMapping("/api/generategraph/{eventId}")
     public String getSolutionAsDotString(@PathVariable int eventId) throws IOException {
         var event = eventStorage.getEvent(eventId);
-        if (event instanceof SolutionGeneratedEvent && ((SolutionGeneratedEvent) event).getSolution().isPresent()) {
-            var solution = (TSPSolution) ((SolutionGeneratedEvent) event).getSolution().get();
-            var viz = Graphviz.fromString(generateDotDiagram(solution));
-            BufferedImage image = viz.render(Format.PNG).toImage();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(image, "png", baos);
-            byte[] bytes = baos.toByteArray();
-            return new String(Base64.getEncoder().encode(bytes));
+        if (event instanceof SolutionGeneratedEvent) {
+            Optional<?> optionalSolution = ((SolutionGeneratedEvent) event).getSolution();
+            if (optionalSolution.isPresent()) {
+                var solution = (TSPSolution) optionalSolution.get();
+                var viz = Graphviz.fromString(generateDotDiagram(solution));
+                BufferedImage image = viz.render(Format.PNG).toImage();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ImageIO.write(image, "png", baos);
+                byte[] bytes = baos.toByteArray();
+                return new String(Base64.getEncoder().encode(bytes));
+            } else {
+                return "Solution is not present";
+            }
         } else {
             return "Invalid eventId or solution expired";
         }
