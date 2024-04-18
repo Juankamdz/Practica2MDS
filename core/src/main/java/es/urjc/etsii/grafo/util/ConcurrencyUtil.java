@@ -1,5 +1,4 @@
 package es.urjc.etsii.grafo.util;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -7,61 +6,60 @@ import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 /**
- * Helper methods to deal with concurrent tasks
+ * Métodos de ayuda para tratar con tareas concurrentes
  */
 public class ConcurrencyUtil {
-
     /**
-     * Awaits termination for the given executor service.
-     * Wraps InterruptedException in an unchecked RuntimeException
+     * Espera hasta la terminación del servicio de ejecución dado.
+     * Envuelve InterruptedException en una RuntimeException sin comprobar.
      *
-     * @param executor Executor service
+     * @param executor Servicio de ejecución
      */
     public static void await(ExecutorService executor) {
         try {
             executor.awaitTermination(1, TimeUnit.DAYS);
         } catch (InterruptedException e) {
+            // Vuelve a lanzar la InterruptedException
             throw new RuntimeException(e);
         }
     }
-
     /**
-     * Block until the task is completed.
-     * Wraps the annoying checked exception.
+     * Bloquea hasta que la tarea se complete.
+     * Envuelve la molesta excepción comprobada.
      *
-     * @param f Future we will wait for
-     * @param <T> Future type
-     * @return SimplifiedResult of the task
-     * @throws java.lang.RuntimeException in case any error happened during the execution
+     * @param f Futuro por el que esperaremos
+     * @param <T> Tipo de futuro
+     * @return Resultado simplificado de la tarea
+     * @throws java.lang.RuntimeException en caso de que ocurra algún error durante la ejecución
      */
     public static <T> T await(Future<T> f){
         try {
             return f.get();
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // Re-interrupt the thread
+            // Re-interrumpe el hilo y relanza la excepción
+            Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
-
     /**
-     * Block until the task is completed.
-     * Handles the exception with the given handler
+     * Bloquea hasta que la tarea se complete.
+     * Maneja la excepción con el manipulador dado
      *
-     * @param f Future we will wait for
-     * @param <T> Optional type
-     * @param exceptionHandler pass the exception to handler instead of promoting to RuntimeException
-     * @return SimplifiedResult of the task
-     * @throws java.lang.RuntimeException in case any error happened during the execution
+     * @param f Futuro por el que esperaremos
+     * @param <T> Tipo opcional
+     * @param exceptionHandler pasa la excepción al manipulador en lugar de promoverla a RuntimeException
+     * @return Resultado simplificado de la tarea
+     * @throws java.lang.RuntimeException en caso de que ocurra algún error durante la ejecución
      */
     public static <T> Optional<T> await(Future<T> f, Consumer<Exception> exceptionHandler){
         try {
             return Optional.of(f.get());
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // Re-interrupt the thread
+            // Re-interrumpe el hilo y llama al manipulador de excepciones
+            Thread.currentThread().interrupt();
             exceptionHandler.accept(e);
             return Optional.empty();
         } catch (ExecutionException e) {
@@ -69,29 +67,26 @@ public class ConcurrencyUtil {
             return Optional.empty();
         }
     }
-
     /**
-     * Await a collection of futures
+     * Espera una colección de futuros
      *
-     * @param futures collection of futures
-     * @param <T> Futures type
-     * @return Objects inside futures
+     * @param futures colección de futuros
+     * @param <T> Tipo de futuros
+     * @return Objetos dentro de futuros
      */
     public static <T> List<T> awaitAll(Collection<Future<T>> futures){
         return awaitAll(futures.stream());
     }
-
     /**
-     * Await a stream of futures
+     * Espera un stream de futuros
      *
-     * @param futures stream of futures
-     * @param <T> Futures type
-     * @return Objects inside futures
+     * @param futures stream de futuros
+     * @param <T> Tipo de futuros
+     * @return Objetos dentro de futuros
      */
     public static <T> List<T> awaitAll(Stream<Future<T>> futures){
         return futures.map(ConcurrencyUtil::await).collect(Collectors.toList());
     }
-
     public static void sleep(int time, TimeUnit unit) throws InterruptedException {
         Thread.sleep(unit.toMillis(time));
     }
