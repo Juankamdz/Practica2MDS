@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Practica2MDS.iml" filepath="$PROJECT_DIR$/.idea/Practica2MDS.iml" />
+      <module fileurl="file://$PROJECT_DIR$/example-tsp/TSP.iml" filepath="$PROJECT_DIR$/example-tsp/TSP.iml" />
+      <module fileurl="file://$PROJECT_DIR$/template/__RNAME__.iml" filepath="$PROJECT_DIR$/template/__RNAME__.iml" />
+      <module fileurl="file://$PROJECT_DIR$/core/mork.iml" filepath="$PROJECT_DIR$/core/mork.iml" />
     </modules>
   </component>
 </project>
