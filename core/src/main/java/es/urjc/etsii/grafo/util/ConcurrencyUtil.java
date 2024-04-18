@@ -16,12 +16,12 @@ public class ConcurrencyUtil {
      *
      * @param executor Servicio de ejecución
      */
-    public static void await(ExecutorService executor) {
+    public static void await(ExecutorService executor) throws InterruptedException {
         try {
             executor.awaitTermination(1, TimeUnit.DAYS);
         } catch (InterruptedException e) {
-            // Vuelve a lanzar la InterruptedException
-            throw new RuntimeException(e);
+            // Rethrow the InterruptedException
+            throw e;
         }
     }
     /**
