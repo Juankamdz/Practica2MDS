@@ -40,7 +40,7 @@ public class ConcurrencyUtil {
         try {
             return f.get();
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            Thread.currentThread().interrupt(); // Re-interrupt the thread
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
@@ -61,7 +61,7 @@ public class ConcurrencyUtil {
         try {
             return Optional.of(f.get());
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            Thread.currentThread().interrupt(); // Re-interrupt the thread
             exceptionHandler.accept(e);
             return Optional.empty();
         } catch (ExecutionException e) {
@@ -92,11 +92,7 @@ public class ConcurrencyUtil {
         return futures.map(ConcurrencyUtil::await).collect(Collectors.toList());
     }
 
-    public static void sleep(int time, TimeUnit unit){
-        try {
-            Thread.sleep(unit.toMillis(time));
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+    public static void sleep(int time, TimeUnit unit) throws InterruptedException {
+        Thread.sleep(unit.toMillis(time));
     }
 }
