@@ -145,16 +145,17 @@ public class RandomGreedyGRASPConstructive<M extends Move<S, I>, S extends Solut
             }
         }
         if (rcl.isEmpty()) {
-            // Return a random element and call it a day
+            // Si no hay elementos en la lista restringida, seleccionamos uno aleatorio de la lista original
             return r.nextInt(cl.size());
         }
 
-        // get best
-        M best = null;
+        // Inicializar "best" con el primer elemento de la lista restringida
+        M best = rcl.get(0);
+
+        // Encontrar el mejor elemento en la lista restringida
         for (M m : rcl) {
             assert m != null;
-            if (best == null) best = m;
-            else best = comparator.getBest(best, m);
+            best = comparator.getBest(best, m);
         }
 
         // Choose a random from all the items with equal best score
